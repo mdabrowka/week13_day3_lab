@@ -43,6 +43,20 @@ server.get('/api/countries', function(req, res){
   })
 });
 
+server.delete('/api/countries', function(req, res){
+  db.collection('countries').remove(function(err, result){
+    if(err){
+      console.log(err);
+      console.log(500);
+      res.send();
+      return;
+    }
+    res.status(204);
+    res.send();
+  });
+});
+
+
 server.listen(3000, function() {
   console.log("listening on port 3000");
 });
