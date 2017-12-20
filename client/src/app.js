@@ -10,6 +10,9 @@ makeRequest(url, requestComplete);
 
 const saveCountryButton = document.querySelector('#save-country');
 saveCountryButton.addEventListener('click', saveCountryButtonClicked)
+
+const deleteButton = document.querySelector('#deleteButton');
+deleteButton.addEventListener('click', deleteButtonClicked);
 }
 
 
@@ -19,6 +22,7 @@ const makeRequest = function(url, callback) {
   request.send();
   request.addEventListener('load', callback);
 };
+
 
 const requestComplete = function() {
   if (this.status !== 200) return;
@@ -52,6 +56,17 @@ const saveCountryButtonClicked = function(evt) {
 const saveCountryRequestComplete = function(name) {
   countryView.addCountry(name);
 }
+
+
+const deleteButtonClicked = function(evt) {
+  console.log('delete button clicked');
+  request.delete(deleteRequestComplete);
+}
+
+const deleteRequestComplete = function() {
+  countryView.clear();
+}
+
 
 
 document.addEventListener('DOMContentLoaded', app);
