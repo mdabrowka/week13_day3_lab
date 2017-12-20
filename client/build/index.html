@@ -4,18 +4,20 @@
     <meta charset="utf-8">
     <title>BucketList</title>
     <link rel="stylesheet" href="styles.css">
+    <script src="https://maps.googleapis.com/maps/api/js"></script>
+    <script type="text/javascript" src="mapWrapper.js"></script>
+    <script src='app.js'></script>
     <script src="bundle.js"></script>
   </head>
   <body>
-
     <select id="all-countries-list" name="all-countries-list">
       <option selected disabled> Choose a country</option>
     </select>
     <button id="save-country" type="submit">Add to Bucketlist</button>
     <div class="list-container">
-    <ul id="countries">
-    </ul>
-    <button id="deleteButton" type="submit">Delete All</button>
-  </div>
+      <ul id="countries"></ul>
+        <button id="deleteButton" type="submit">Delete All</button>
+    </div>
+  <div id='main-map'> </div>
   </body>
 </html>
