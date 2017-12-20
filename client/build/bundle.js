@@ -65,11 +65,20 @@
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
+
+const Request = __webpack_require__(1);
+const CountryView = __webpack_require__(2);
+
+const request = new Request("http://localhost:3000/api/countries")
+const countryView = new CountryView();
 
 var app = function(){
 const url = "https://restcountries.eu/rest/v2/all";
 makeRequest(url, requestComplete);
+
+const saveCountryButton = document.querySelector('#save-country');
+saveCountryButton.addEventListener('click', saveCountryButtonClicked)
 }
 
 
@@ -95,14 +104,113 @@ const populateDropDown = function(country) {
   const dropDown = document.querySelector('#all-countries-list');
   country.forEach(function(country, index) {
     const option = document.createElement('option');
-    option.value = index;
+    option.value = country.name;
     option.innerText = country.name;
     dropDown.appendChild(option);
   })
 }
 
+const saveCountryButtonClicked = function(evt) {
+  const countryValue = document.querySelector('#all-countries-list').value;
+  const body = {
+    name: countryValue
+  }
+  request.post(saveCountryRequestComplete, body);
+}
+
+const saveCountryRequestComplete = function(name) {
+  countryView.addCountry(name);
+}
+
 
 document.addEventListener('DOMContentLoaded', app);
+
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports) {
+
+const Request = function(url) {
+  this.url = url;
+}
+//making this pretty generic, si it can be re-usable
+Request.prototype.get = function(callback) {
+  const request = new XMLHttpRequest();
+  request.open('GET', this.url);
+  request.addEventListener('load', function(){
+    if(this.status != 200) {
+      return;
+    }
+    const responseBody = JSON.parse(this.responseText);
+//responseBody will be allQuotes, this is dynamic - the callback can we
+//whatever you want it to be, single responsibilty obeyed
+    callback(responseBody);
+  });
+  //need to send it in here - at the very end of the function
+  request.send();
+}
+
+Request.prototype.post = function(callback, body) {
+  const request = new XMLHttpRequest();
+  request.open('POST', this.url);
+  //sometimes we need to tell the server what we're giving it in a header, where
+  //the additional info lives/ insomnia did it all for us
+  //now we need to add a header in js
+  request.setRequestHeader('Content-Type', 'application/json');
+  request.addEventListener('load', function(){
+    if(this.status != 201) {
+      return;
+    }
+    const responseBody = JSON.parse(this.responseText);
+    callback(responseBody);
+  });
+  //we need to pass the body but stringified, so another funciton doesn't
+  //need to worry about it, it's ready to go
+  request.send(JSON.stringify(body));
+}
+
+Request.prototype.delete = function(callback) {
+  const request = new XMLHttpRequest();
+  request.open('DELETE', this.url);
+  request.addEventListener('load', function() {
+    if(this.status!==204) {
+      return;
+    }
+    callback();
+  });
+  request.send();
+}
+
+module.exports = Request;
+
+
+/***/ }),
+/* 2 */
+/***/ (function(module, exports) {
+
+var CountryView = function(){
+  this.countries = [];
+}
+//everytime you add a country it adds it to the array and displays it
+CountryView.prototype.addCountry = function(country) {
+  this.countries.push(country);
+  this.render(country);
+}
+
+CountryView.prototype.clear = function(country) {
+  this.countries = [];
+  const ul = document.querySelector('#countries');
+  ul.innerHTML = '';
+}
+//all the appending in this one
+CountryView.prototype.render = function(country){
+    const ul = document.querySelector('#countries');
+    const liName = document.createElement('li');
+    liName.innerText = country.name;
+    ul.appendChild(liName);
+}
+
+ module.exports = CountryView;
 
 
 /***/ })

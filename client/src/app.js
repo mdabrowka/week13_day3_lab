@@ -1,6 +1,15 @@
+const Request = require('./services/request.js');
+const CountryView = require('./views/countryView');
+
+const request = new Request("http://localhost:3000/api/countries")
+const countryView = new CountryView();
+
 var app = function(){
 const url = "https://restcountries.eu/rest/v2/all";
 makeRequest(url, requestComplete);
+
+const saveCountryButton = document.querySelector('#save-country');
+saveCountryButton.addEventListener('click', saveCountryButtonClicked)
 }
 
 
@@ -26,10 +35,22 @@ const populateDropDown = function(country) {
   const dropDown = document.querySelector('#all-countries-list');
   country.forEach(function(country, index) {
     const option = document.createElement('option');
-    option.value = index;
+    option.value = country.name;
     option.innerText = country.name;
     dropDown.appendChild(option);
   })
+}
+
+const saveCountryButtonClicked = function(evt) {
+  const countryValue = document.querySelector('#all-countries-list').value;
+  const body = {
+    name: countryValue
+  }
+  request.post(saveCountryRequestComplete, body);
+}
+
+const saveCountryRequestComplete = function(name) {
+  countryView.addCountry(name);
 }
 
 
