@@ -31,6 +31,18 @@ server.post('/api/countries', function(req, res) {
   });
 });
 
+server.get('/api/countries', function(req, res){
+  db.collection('countries').find().toArray(function(err, result){
+    if(err) {
+      console.log(err);
+      res.status(500);
+      res.send();
+      return;
+    }
+    res.json(result);
+  })
+});
+
 server.listen(3000, function() {
   console.log("listening on port 3000");
 });
