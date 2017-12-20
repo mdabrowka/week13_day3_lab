@@ -37,9 +37,9 @@ const requestComplete = function() {
 
 const populateDropDown = function(country) {
   const dropDown = document.querySelector('#all-countries-list');
-  country.forEach(function(country, index) {
+  country.forEach(function(country) {
     const option = document.createElement('option');
-    option.value = country.name;
+    option.value = `${country.capital}, ${country.name}`;
     option.innerText = country.name;
     dropDown.appendChild(option);
   })
