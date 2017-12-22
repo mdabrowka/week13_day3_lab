@@ -1,5 +1,8 @@
 const Request = require('./services/request.js');
 const CountryView = require('./views/countryView');
+const MapWrapper = require('./mapWrapper');
+
+let countryData = [];
 
 const request = new Request("http://localhost:3000/api/countries")
 const countryView = new CountryView();
@@ -27,7 +30,7 @@ const makeRequest = function(url, callback) {
 const requestComplete = function() {
   if (this.status !== 200) return;
   const jsonString = this.responseText;
-  const countryData = JSON.parse(jsonString);
+  countryData = JSON.parse(jsonString);
   const select = document.querySelector('#all-countries-list');
   select.addEventListener('change', function(){
     let selectedCountry = countryData[this.value];
@@ -37,19 +40,25 @@ const requestComplete = function() {
 
 const populateDropDown = function(country) {
   const dropDown = document.querySelector('#all-countries-list');
-  country.forEach(function(country) {
+  country.forEach(function(country, index) {
     const option = document.createElement('option');
-    option.value = `${country.capital}, ${country.name}`;
+    option.value = index;
+    // option.value = `${country.capital}, ${country.name}, region: ${country.region}`;
     option.innerText = country.name;
     dropDown.appendChild(option);
   })
 }
-
-const saveCountryButtonClicked = function(evt) {
+//this is my post request where i am saving information
+const saveCountryButtonClicked = function() {
+  //this needs to be an index
   const countryValue = document.querySelector('#all-countries-list').value;
+  const country = countryData[countryValue];
+
   const body = {
-    name: countryValue
-  }
+    name: country.name,
+    capital: country.capital
+}
+
   request.post(saveCountryRequestComplete, body);
 }
 
@@ -72,12 +81,13 @@ var initialize = function(){
 
   var center = { lat: 40.712784, lng: -74.005941 };
 
-  var mainMap = new MapWrapper(mapDiv, center, 10);
-  mainMap.addMarker(center);
-  mainMap.addClickEvent();
+  var mainMap = new MapWrapper(mapDiv, center, 10, function() {
+    mainMap.addMarker(center);
+    mainMap.addClickEvent();
+  });
 
-  var bounceButton = document.querySelector('#button-bounce-markers')
-  bounceButton.addEventListener('click', mainMap.bounceMarkers.bind(mainMap))
+  // var bounceButton = document.querySelector('#button-bounce-markers')
+  // bounceButton.addEventListener('click', mainMap.bounceMarkers.bind(mainMap))
 }
 
 document.addEventListener('DOMContentLoaded', app);
